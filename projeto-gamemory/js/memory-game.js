@@ -13,18 +13,31 @@ AFRAME.registerComponent('memory-game', {
             '#F5FF33', '#F5FF33', '#33FFF5', '#33FFF5', '#FF8C33', '#FF8C33', '#8C33FF', '#8C33FF'
         ];
 
-        // Formas para usar como valores das cartas
-        this.cardShapes = [
-            'circle', 'circle', 'triangle', 'triangle', 'square', 'square', 'ring', 'ring',
-            'torus', 'torus', 'cone', 'cone', 'octahedron', 'octahedron', 'tetrahedron', 'tetrahedron'
+        // Imagens para usar como valores das cartas
+        this.cardImages = [
+            'https://upload.wikimedia.org/wikipedia/pt/2/23/Linkin_Park_Hybrid_Theory.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/2/23/Linkin_Park_Hybrid_Theory.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/archive/8/83/20250610231150%21Linkin_park-meteora_a.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/archive/8/83/20250610231150%21Linkin_park-meteora_a.jpg',
+            'https://m.media-amazon.com/images/I/61qxq7VRCwL._UF1000,1000_QL80_.jpg',
+            'https://m.media-amazon.com/images/I/61qxq7VRCwL._UF1000,1000_QL80_.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL_BJZG0qA3Gag4usKoJ36sjuFhvFRKVKNDw&s',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL_BJZG0qA3Gag4usKoJ36sjuFhvFRKVKNDw&s',
+            'https://m.media-amazon.com/images/I/61uFuJ8hcJL._UF1000,1000_QL80_.jpg',
+            'https://m.media-amazon.com/images/I/61uFuJ8hcJL._UF1000,1000_QL80_.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/thumb/c/c5/Linkin_Park_Hunting_Party.jpg/250px-Linkin_Park_Hunting_Party.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/thumb/c/c5/Linkin_Park_Hunting_Party.jpg/250px-Linkin_Park_Hunting_Party.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/7/7f/Linkin_Park_Reanimation.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/7/7f/Linkin_Park_Reanimation.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/9/97/Linkin_Park_-_From_Zero.jpg',
+            'https://upload.wikimedia.org/wikipedia/pt/9/97/Linkin_Park_-_From_Zero.jpg'
         ];
-        
-        // Emparelhar cores e formas
+
+        // Emparelhar imagens
         this.cardPairs = [];
-        for (let i = 0; i < this.cardColors.length; i++) {
+        for (let i = 0; i < this.cardImages.length; i++) {
             this.cardPairs.push({
-                color: this.cardColors[i],
-                shape: this.cardShapes[i]
+                image: this.cardImages[i]
             });
         }
         
@@ -87,8 +100,7 @@ AFRAME.registerComponent('memory-game', {
                 const card = document.createElement('a-entity');
                 card.setAttribute('position', `${x} ${y} 0`);
                 card.setAttribute('data-index', cardIndex);
-                card.setAttribute('data-color', cardPair.color);
-                card.setAttribute('data-shape', cardPair.shape);
+                card.setAttribute('data-image', cardPair.image);
                 card.setAttribute('class', 'card');
                 
                 // Create card front (face-down) - Esta é a parte clicável
@@ -118,59 +130,16 @@ AFRAME.registerComponent('memory-game', {
                     this.flipCard(card);
                 });
                 
-                // Create card back (face-up) - Usando geometrias 3D em vez de texto
-                const cardBack = document.createElement('a-entity');
-                cardBack.setAttribute('position', '0 0 0.1');  // Posicionado ligeiramente à frente
-                
-                // Criando a forma 3D
-                const shape = document.createElement('a-entity');
-                let geometry, scale;
-                
-                switch(cardPair.shape) {
-                    case 'circle':
-                        geometry = 'primitive: circle; radius: 0.15';
-                        scale = '1 1 1';
-                        break;
-                    case 'triangle':
-                        geometry = 'primitive: triangle; vertexA: 0 0.15 0; vertexB: -0.15 -0.15 0; vertexC: 0.15 -0.15 0';
-                        scale = '1 1 1';
-                        break;
-                    case 'square':
-                        geometry = 'primitive: plane; width: 0.25; height: 0.25';
-                        scale = '1 1 1';
-                        break;
-                    case 'ring':
-                        geometry = 'primitive: ring; radiusInner: 0.1; radiusOuter: 0.15';
-                        scale = '1 1 1';
-                        break;
-                    case 'torus':
-                        geometry = 'primitive: torus; radius: 0.1; radiusTubular: 0.01';
-                        scale = '1 1 1';
-                        break;
-                    case 'cone':
-                        geometry = 'primitive: cone; radiusBottom: 0.15; radiusTop: 0; height: 0.25';
-                        scale = '1 1 1';
-                        break;
-                    case 'octahedron':
-                        geometry = 'primitive: octahedron; radius: 0.15';
-                        scale = '1 1 1';
-                        break;
-                    case 'tetrahedron':
-                        geometry = 'primitive: tetrahedron; radius: 0.15';
-                        scale = '1 1 1';
-                        break;
-                    default:
-                        geometry = 'primitive: box; width: 0.25; height: 0.25; depth: 0.05';
-                        scale = '1 1 1';
-                }
-                
-                shape.setAttribute('geometry', geometry);
-                shape.setAttribute('material', `color: ${cardPair.color}; shader: flat`);
-                shape.setAttribute('scale', scale);
-                shape.setAttribute('visible', 'false');
-                shape.setAttribute('class', 'shape');
-                cardBack.appendChild(shape);
-                
+                // Create card back (face-up) - Usando imagem
+                // Remover o <a-entity> intermediário
+                const imagePlane = document.createElement('a-plane');
+                imagePlane.setAttribute('width', cardWidth * 0.9);
+                imagePlane.setAttribute('height', cardHeight * 0.9);
+                imagePlane.setAttribute('material', `src: ${cardPair.image}; shader: flat`);
+                imagePlane.setAttribute('visible', 'false');
+                imagePlane.setAttribute('position', '0 0 0.1'); // garantir que fique acima do fundo
+                imagePlane.setAttribute('class', 'card-image');
+
                 // Create card background (for the back/revealed side)
                 const cardBackBg = document.createElement('a-plane');
                 cardBackBg.setAttribute('width', cardWidth);
@@ -183,7 +152,7 @@ AFRAME.registerComponent('memory-game', {
                 // Add all parts to the card
                 card.appendChild(cardFront);
                 card.appendChild(cardBackBg);
-                card.appendChild(cardBack);
+                card.appendChild(imagePlane); // Adiciona diretamente ao card
                 
                 // Add to game board
                 gameBoard.appendChild(card);
@@ -199,26 +168,23 @@ AFRAME.registerComponent('memory-game', {
     },
     
     flipCard: function(card) {
-        console.log("Tentando virar carta");
         // Get card components
         const cardFront = card.querySelector('.card-front');
         const cardBackBg = card.querySelector('.card-back-bg');
-        const shape = card.querySelector('.shape');
+        const imagePlane = card.querySelector('.card-image');
         
         // Check if card can be flipped
         if (!this.canFlip || 
             this.flippedCards.includes(card) || 
-            shape.getAttribute('visible') === true) {
-            console.log("Carta não pode ser virada");
+            (imagePlane && imagePlane.getAttribute('visible') === true)) {
             return;
         }
         
-        console.log("Virando carta");
         // Flip the card
         cardFront.setAttribute('visible', false);
-        cardFront.classList.remove('clickable');  // Remover clickable quando virada
+        cardFront.classList.remove('clickable');
         cardBackBg.setAttribute('visible', true);
-        shape.setAttribute('visible', true);
+        if (imagePlane) imagePlane.setAttribute('visible', true);
         
         // Add to flipped cards
         this.flippedCards.push(card);
@@ -233,13 +199,13 @@ AFRAME.registerComponent('memory-game', {
     checkMatch: function() {
         const card1 = this.flippedCards[0];
         const card2 = this.flippedCards[1];
-        
-        const color1 = card1.getAttribute('data-color');
-        const color2 = card2.getAttribute('data-color');
-        const shape1 = card1.getAttribute('data-shape');
-        const shape2 = card2.getAttribute('data-shape');
-        
-        if (color1 === color2 && shape1 === shape2) {
+
+        const imagePlane1 = card1.querySelector('.card-image');
+        const imagePlane2 = card2.querySelector('.card-image');
+        const image1 = card1.getAttribute('data-image') || (imagePlane1 ? imagePlane1.getAttribute('material').match(/src: ([^;]+)/)[1] : '');
+        const image2 = card2.getAttribute('data-image') || (imagePlane2 ? imagePlane2.getAttribute('material').match(/src: ([^;]+)/)[1] : '');
+
+        if (image1 === image2) {
             // Match found
             this.pairsFound++;
             
@@ -248,7 +214,7 @@ AFRAME.registerComponent('memory-game', {
             
             // Display message
             const messageEl = document.getElementById('message');
-            messageEl.textContent = 'Match found!';
+            messageEl.textContent = 'Boa mlk!';
             setTimeout(() => { messageEl.textContent = ''; }, 1500);
             
             // Remove cards from game logic (keep visible)
@@ -264,12 +230,12 @@ AFRAME.registerComponent('memory-game', {
             this.flippedCards.forEach(card => {
                 const cardFront = card.querySelector('.card-front');
                 const cardBackBg = card.querySelector('.card-back-bg');
-                const shape = card.querySelector('.shape');
-                
+                const imagePlane = card.querySelector('.card-image');
+
                 cardFront.setAttribute('visible', true);
-                cardFront.classList.add('clickable');  // Restaurar clickable
+                cardFront.classList.add('clickable');
                 cardBackBg.setAttribute('visible', false);
-                shape.setAttribute('visible', false);
+                if (imagePlane) imagePlane.setAttribute('visible', false);
             });
             
             // Display message
@@ -356,3 +322,6 @@ AFRAME.registerComponent('card-hover', {
     });
   }
 });
+    el.addEventListener('mouseleave', () => {
+      el.setAttribute('material', 'color', originalColor);
+    });
