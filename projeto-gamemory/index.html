@@ -32,6 +32,9 @@
     </div>
 
     <a-scene memory-game background="color: #FAFAFA">
+        <!-- Música de fundo (corrigido para autoplay em navegadores modernos) -->
+            <audio id="bg-music" src="assets/fighting_myself.mp3" loop autoplay style="display:none"></audio>
+            <a-entity id="bg-music-entity"></a-entity>
         <!-- Camera and controls -->
         <a-entity id="rig" position="0 1.6 0">
             <a-camera look-controls wasd-controls>
@@ -48,7 +51,7 @@
         </a-entity>
 
         <!-- Environment -->
-        <a-entity environment="preset: forest; dressingAmount: 500"></a-entity>
+        <a-entity environment="preset: yavapai; dressingAmount: 500"></a-entity>
 
         <!-- Game board -->
         <a-entity id="game-board" position="0 1.6 -2">
